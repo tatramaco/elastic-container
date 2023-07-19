@@ -6,6 +6,13 @@ xpack.fleet.packages:
     version: latest
   - name: system
     version: latest
+  - name: windows
+    version: latest
+  - name: network_traffic
+    version: latest
+  - name: suricata
+    version: 2.10.0  
+  
 xpack.fleet.agentPolicies:
   - name: Fleet-Server-Policy
     id: fleet-server-policy
@@ -14,5 +21,132 @@ xpack.fleet.agentPolicies:
       - name: fleet_server-1
         package:
           name: fleet_server
+
+  - name: lab
+    id: lab-policy
+    namespace: default
+    package_policies:
+      - name: system-1
+        package:
+          name: system
+      - name: windows-1
+        package:
+          name: windows
+        inputs:
+        - type: windows/metrics
+          enabled: false
+      - name: network_traffic-1
+        package:
+          name: network_traffic
+        inputs: 
+          - type: packet
+            enabled: true
+            vars:
+              - name: never_install
+                value: false
+            streams:    
+              - data_stream:
+                  dataset: network_traffic.amqp
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.cassandra
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.dhcpv4
+                enabled: false                
+              - data_stream:
+                  dataset: network_traffic.dns
+                enabled: true
+                vars: 
+              #     - name: port
+              #       value: 53
+              #     - name: geoip_enrich
+              #       value: true
+                  - name: monitor_processes
+                    value: true
+              - data_stream:
+                  dataset: network_traffic.flow
+                enabled: false                     
+              - data_stream:
+                  dataset: network_traffic.http
+                enabled: true
+                vars:
+      #             - name: port
+      #               value: [80,8080,8000,5000,8002,8080]
+                  - name: monitor_processes
+                    value: true
+      #             - name: hide_keywords
+      #               value: []
+      #             - name: send_headers
+      #               value: []
+      #             - name: redact_headers
+      #               value: []
+      #             - name: include_body_for
+      #               value: []
+      #             - name: include_request_body_for
+      #               value: []
+      #             - name: include_response_body_for
+      #               value: []
+              - data_stream:
+                  dataset: network_traffic.icmp
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.memcached
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.mongodb
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.mysql
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.nfs
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.pgsql
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.redis
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.sip
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.thrift
+                enabled: false
+              - data_stream:
+                  dataset: network_traffic.tls
+                enabled: true
+                vars:
+      #             - name: port
+      #               value: [443,
+      #               993,
+      #               995,
+      #               5223,
+      #               8443,
+      #               8883,
+      #               9243
+      #               ]
+      #             - name: geoip_enrich
+      #               value: true
+                  - name: monitor_processes
+                    value: true
+  - name: Network
+    id: network-policy
+    namespace: default
+    package_policies:
+      - name: system-2
+        package:
+          name: system
+        inputs:
+        - type: system/metrics
+          enabled: false
+        - type: logfile
+          enabled: false
+        - type: winlog
+          enabled: false
+      - name: suricata
+        package:
+          name: suricata
 
 
